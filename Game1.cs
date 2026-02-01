@@ -13,6 +13,8 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private Texture2D _background;
     private Texture2D _ufo;
+    Vector2 UFOPosition = new Vector2(300, 20);
+    string ufoEdge = "top";
 
     private SpriteFont _arial;
     private string _message;
@@ -85,38 +87,87 @@ public class Game1 : Game
 
         if (kbCurrentState.IsKeyDown(Keys.Left))
         {
-            _PlayersInput += new Vector2(-1, 0);
-            _facing = SpriteEffects.FlipHorizontally;
-            _message += "Left ";
+            if (PlayerLocation.X > 0 - (1529 / 20))
+            {
+                _PlayersInput += new Vector2(-1, 0);
+                _facing = SpriteEffects.FlipHorizontally;
+                _message += "Left ";
+            }
+
         }
         if (kbCurrentState.IsKeyDown(Keys.Right))
         {
-            _PlayersInput += new Vector2(1, 0);
-            _facing = SpriteEffects.None;
-            _message += "Right ";
+            if (PlayerLocation.X < _width - (1529 / 12))
+            {
+                _PlayersInput += new Vector2(1, 0);
+                _facing = SpriteEffects.None;
+                _message += "Right ";
+            }
+
         }
         if (kbCurrentState.IsKeyDown(Keys.Up))
         {
-            _PlayersInput += new Vector2(0, -1);
-            _facing = SpriteEffects.FlipVertically;
-            _message += "Up ";
+            if (PlayerLocation.Y > 0)
+            {
+                _PlayersInput += new Vector2(0, -1);
+                _facing = SpriteEffects.FlipVertically;
+                _message += "Up ";
+            }
+
         }
         if (kbCurrentState.IsKeyDown(Keys.Down))
         {
-            _PlayersInput += new Vector2(0, 1);
-            _facing = SpriteEffects.None;
-            _message += "Down";
-        }
+            if (PlayerLocation.Y < _height - 167)
+            {
+                _PlayersInput += new Vector2(0, 1);
+                _facing = SpriteEffects.None;
+                _message += "Down";
+            }
 
+        }
 
         PlayerLocation += _PlayersInput * 5;
 
         _kbPreviousState = kbCurrentState;
 
-        // Wall Collision
-        if (PlayerLocation.X > _width - 1529 / 16 || PlayerLocation.X < 0 - 1529 / 16 || PlayerLocation.Y > _height - 167 || PlayerLocation.Y < 0)
+        // Automated Movement
+        switch (ufoEdge)
         {
-            PlayerLocation = new Vector2(300, 200);
+            case "top":
+                UFOPosition.X += 5;
+                if (UFOPosition.X + _ufo.Width >= _width)
+                {
+                    UFOPosition.X = _width - _ufo.Width;
+                    ufoEdge = "right";
+                }
+                break;
+
+            case "right":
+                UFOPosition.Y += 5;
+                if (UFOPosition.Y + _ufo.Height >= _height)
+                {
+                    UFOPosition.Y = _height - _ufo.Height;
+                    ufoEdge = "bottom";
+                }
+                break;
+
+            case "bottom":
+                UFOPosition.X -= 5;
+                if (UFOPosition.X <= 0)
+                {
+                    UFOPosition.X = 0;
+                    ufoEdge = "left";
+                }
+                break;
+
+            case "left":
+                UFOPosition.Y -= 5;
+                if (UFOPosition.Y <= 0)
+                {
+                    UFOPosition.Y = 0;
+                    ufoEdge = "top";
+                }
+                break;
         }
 
         base.Update(gameTime);
@@ -134,14 +185,14 @@ public class Game1 : Game
         _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
 
         // static sprite
-        _spriteBatch.Draw(_ufo, new Vector2(300, 140), Color.White);
+        _spriteBatch.Draw(_ufo, UFOPosition, Color.White);
 
         // text
         _spriteBatch.DrawString(_arial, _message, new Vector2(20, 20), Color.Red);
 
         // animation
         _walkingAnimation.Draw(_spriteBatch, PlayerLocation, _facing);
-        _shootingAnimation.Draw(_spriteBatch, new Vector2(50, 50), SpriteEffects.None);
+        _shootingAnimation.Draw(_spriteBatch, new Vector2(50, _height / 2), SpriteEffects.None);
 
         _spriteBatch.End();
 
