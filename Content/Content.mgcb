@@ -32,7 +32,7 @@
 /processorParam:TextureFormat=Color
 /build:Background.png
 
-#begin Dance.png
+#begin Shooting.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -42,7 +42,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Dance.png
+/build:Shooting.png
 
 #begin UFO.png
 /importer:TextureImporter
