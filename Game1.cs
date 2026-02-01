@@ -8,20 +8,21 @@ namespace Assignment_01;
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
+    int _height = 500;
+    int _width = 800;
     private SpriteBatch _spriteBatch;
-
     private Texture2D _background;
     private Texture2D _ufo;
 
     private SpriteFont _arial;
-    private string _message = "This is the string I want to output";
+    private string _message;
 
     private SimpleAnimation _walkingAnimation;
     private SimpleAnimation _shootingAnimation;
 
     private KeyboardState _kbPreviousState;
     Vector2 _PlayersInput;
-    Vector2 ShipLocation = new Vector2(300, 200);
+    Vector2 PlayerLocation = new Vector2(300, 200);
     private SpriteEffects _facing = SpriteEffects.None;
 
 
@@ -35,8 +36,8 @@ public class Game1 : Game
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-        _graphics.PreferredBackBufferWidth = 800;
-        _graphics.PreferredBackBufferHeight = 500;
+        _graphics.PreferredBackBufferWidth = _width;
+        _graphics.PreferredBackBufferHeight = _height;
         _graphics.ApplyChanges();
 
         _PlayersInput = new Vector2(400, 300);
@@ -77,6 +78,7 @@ public class Game1 : Game
         _walkingAnimation.Update(gameTime);
         _shootingAnimation.Update(gameTime);
 
+        // Player Control
         KeyboardState kbCurrentState = Keyboard.GetState();
         _message = "";
         _PlayersInput = Vector2.Zero;
@@ -93,10 +95,29 @@ public class Game1 : Game
             _facing = SpriteEffects.None;
             _message += "Right ";
         }
+        if (kbCurrentState.IsKeyDown(Keys.Up))
+        {
+            _PlayersInput += new Vector2(0, -1);
+            _facing = SpriteEffects.FlipVertically;
+            _message += "Up ";
+        }
+        if (kbCurrentState.IsKeyDown(Keys.Down))
+        {
+            _PlayersInput += new Vector2(0, 1);
+            _facing = SpriteEffects.None;
+            _message += "Down";
+        }
 
-        ShipLocation += _PlayersInput * 10;
+
+        PlayerLocation += _PlayersInput * 5;
 
         _kbPreviousState = kbCurrentState;
+
+        // Wall Collision
+        if (PlayerLocation.X > _width - 1529 / 16 || PlayerLocation.X < 0 - 1529 / 16 || PlayerLocation.Y > _height - 167 || PlayerLocation.Y < 0)
+        {
+            PlayerLocation = new Vector2(300, 200);
+        }
 
         base.Update(gameTime);
     }
@@ -119,7 +140,7 @@ public class Game1 : Game
         _spriteBatch.DrawString(_arial, _message, new Vector2(20, 20), Color.Red);
 
         // animation
-        _walkingAnimation.Draw(_spriteBatch, ShipLocation, _facing);
+        _walkingAnimation.Draw(_spriteBatch, PlayerLocation, _facing);
         _shootingAnimation.Draw(_spriteBatch, new Vector2(50, 50), SpriteEffects.None);
 
         _spriteBatch.End();
